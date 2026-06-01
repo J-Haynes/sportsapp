@@ -14,17 +14,17 @@ const SUPER_RUGBY: League = {
 
 // 11 teams — official Super Rugby Pacific 2026 roster
 const T: Record<string, Team> = {
-  blues:       { id: 1,  sportId: 1, name: 'Blues',             shortName: 'BLU', slug: 'blues',          logoUrl: '/blues.png',         country: 'New Zealand' },
-  chiefs:      { id: 2,  sportId: 1, name: 'Chiefs',            shortName: 'CHI', slug: 'chiefs',         logoUrl: '/chiefs.svg',        country: 'New Zealand' },
-  crusaders:   { id: 3,  sportId: 1, name: 'Crusaders',         shortName: 'CRU', slug: 'crusaders',      logoUrl: '/crusaders.png', country: 'New Zealand' },
-  highlanders: { id: 4,  sportId: 1, name: 'Highlanders',       shortName: 'HIG', slug: 'highlanders',    logoUrl: '/highlanders.png', country: 'New Zealand' },
-  hurricanes:  { id: 5,  sportId: 1, name: 'Hurricanes',        shortName: 'HUR', slug: 'hurricanes',     logoUrl: '/hurricanes.png',       country: 'New Zealand' },
-  brumbies:    { id: 6,  sportId: 1, name: 'ACT Brumbies',      shortName: 'BRU', slug: 'brumbies',       logoUrl: '/brumbies.svg', country: 'Australia'   },
-  reds:        { id: 7,  sportId: 1, name: 'Queensland Reds',   shortName: 'RED', slug: 'reds',           logoUrl: '/reds.png', country: 'Australia'   },
-  waratahs:    { id: 8,  sportId: 1, name: 'NSW Waratahs',      shortName: 'WAR', slug: 'waratahs',       logoUrl: '/waratahs.svg', country: 'Australia'   },
-  force:       { id: 9,  sportId: 1, name: 'Western Force',     shortName: 'FOR', slug: 'force',          logoUrl: '/westernforce.png', country: 'Australia'   },
-  drua:        { id: 10, sportId: 1, name: 'Fijian Drua',       shortName: 'DRU', slug: 'fijian-drua',    logoUrl: '/drua.png', country: 'Fiji'        },
-  moana:       { id: 11, sportId: 1, name: 'Moana Pasifika',    shortName: 'MOA', slug: 'moana-pasifika', logoUrl: '/moana.png', country: 'Pacific'     },
+  blues:       { id: 1,  sportId: 1, name: 'Blues',             shortName: 'BLU', slug: 'blues',          logoUrl: '/rugby/blues.png',         country: 'New Zealand' },
+  chiefs:      { id: 2,  sportId: 1, name: 'Chiefs',            shortName: 'CHI', slug: 'chiefs',         logoUrl: '/rugby/chiefs.svg',        country: 'New Zealand' },
+  crusaders:   { id: 3,  sportId: 1, name: 'Crusaders',         shortName: 'CRU', slug: 'crusaders',      logoUrl: '/rugby/crusaders.png', country: 'New Zealand' },
+  highlanders: { id: 4,  sportId: 1, name: 'Highlanders',       shortName: 'HIG', slug: 'highlanders',    logoUrl: '/rugby/highlanders.png', country: 'New Zealand' },
+  hurricanes:  { id: 5,  sportId: 1, name: 'Hurricanes',        shortName: 'HUR', slug: 'hurricanes',     logoUrl: '/rugby/hurricanes.png',       country: 'New Zealand' },
+  brumbies:    { id: 6,  sportId: 1, name: 'ACT Brumbies',      shortName: 'BRU', slug: 'brumbies',       logoUrl: '/rugby/brumbies.svg', country: 'Australia'   },
+  reds:        { id: 7,  sportId: 1, name: 'Queensland Reds',   shortName: 'RED', slug: 'reds',           logoUrl: '/rugby/reds.png', country: 'Australia'   },
+  waratahs:    { id: 8,  sportId: 1, name: 'NSW Waratahs',      shortName: 'WAR', slug: 'waratahs',       logoUrl: '/rugby/waratahs.svg', country: 'Australia'   },
+  force:       { id: 9,  sportId: 1, name: 'Western Force',     shortName: 'FOR', slug: 'force',          logoUrl: '/rugby/westernforce.png', country: 'Australia'   },
+  drua:        { id: 10, sportId: 1, name: 'Fijian Drua',       shortName: 'DRU', slug: 'fijian-drua',    logoUrl: '/rugby/drua.png', country: 'Fiji'        },
+  moana:       { id: 11, sportId: 1, name: 'Moana Pasifika',    shortName: 'MOA', slug: 'moana-pasifika', logoUrl: '/rugby/moana.png', country: 'Pacific'     },
 };
 
 const srp = SUPER_RUGBY;

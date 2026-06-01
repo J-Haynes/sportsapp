@@ -1,3 +1,6 @@
+// Fixture data changes constantly — always render fresh on every request
+export const dynamic = 'force-dynamic';
+
 import { getFixtures } from '@/lib/fixtures';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { FixtureFeed } from '@/components/fixtures/FixtureFeed';
