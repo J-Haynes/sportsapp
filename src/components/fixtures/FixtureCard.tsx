@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { Fixture } from '@/lib/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { TeamAvatar } from '@/components/ui/TeamAvatar';
@@ -15,14 +16,24 @@ export function FixtureCard({ fixture }: Props) {
   } = fixture;
 
   const isTeamMatch = homeTeam && awayTeam;
-  const sportEmoji = getSportEmoji(league.sport?.slug ?? '');
 
   return (
     <article className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
       {/* League strip */}
       <div className="flex items-center justify-between px-4 py-2 bg-zinc-800/60 border-b border-zinc-800">
         <span className="text-xs font-medium text-zinc-400 flex items-center gap-1.5">
-          <span aria-hidden="true">{sportEmoji}</span>
+          {league.logoUrl ? (
+            <Image
+              src={league.logoUrl}
+              alt={league.name}
+              width={0}
+              height={16}
+              style={{ width: 'auto', height: '16px' }}
+              className="shrink-0"
+            />
+          ) : (
+            <span aria-hidden="true">{getSportEmoji(league.sport?.slug ?? '')}</span>
+          )}
           {league.shortName ?? league.name}
           {league.country && (
             <span className="text-zinc-600">· {league.country}</span>

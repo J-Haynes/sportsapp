@@ -17,9 +17,16 @@ export function FixtureFeed({ fixtures }: Props) {
   const [view, setView] = useState<View>('upcoming');
 
   const grouped = useMemo(() => {
+    // Exclude past-kickoff games still marked "scheduled" — these are awaiting
+    // the next sync to mark them finished. 3h covers max game duration + sync gap.
+    const syncCutoff = new Date(Date.now() - 3 * 60 * 60 * 1000);
+
     const filtered =
       view === 'upcoming'
-        ? fixtures.filter(f => UPCOMING_STATUSES.has(f.status))
+        ? fixtures.filter(f =>
+            UPCOMING_STATUSES.has(f.status) &&
+            new Date(f.scheduledAt) >= syncCutoff
+          )
         : [...fixtures.filter(f => f.status === 'finished')].reverse();
 
     const map = new Map<string, Fixture[]>();

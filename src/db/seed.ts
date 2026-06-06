@@ -1,5 +1,5 @@
 /**
- * Seeds the database with Super Rugby Pacific 2026 data.
+ * Seeds the database with Super Rugby Pacific 2026 + NRL 2026 data.
  * Run with: npm run db:seed
  *
  * Idempotent — safe to run multiple times. Skips fixture insert if data exists.
@@ -11,103 +11,167 @@ import { sports, leagues, seasons, teams, fixtures } from './schema';
 async function main() {
   console.log('🌱 Seeding database...\n');
 
-  // ── Sport ──────────────────────────────────────────────────────────────────
-  const [sport] = await db
+  // ══════════════════════════════════════════════════════════════════════════════
+  // Rugby Union — Super Rugby Pacific 2026
+  // ══════════════════════════════════════════════════════════════════════════════
+
+  const [rugbyUnion] = await db
     .insert(sports)
     .values({ name: 'Rugby Union', slug: 'rugby' })
     .onConflictDoUpdate({ target: sports.slug, set: { name: 'Rugby Union' } })
     .returning();
-  console.log(`✓ Sport: ${sport.name} (id ${sport.id})`);
+  console.log(`✓ Sport: ${rugbyUnion.name} (id ${rugbyUnion.id})`);
 
-  // ── League ─────────────────────────────────────────────────────────────────
-  const [league] = await db
+  const [superRugby] = await db
     .insert(leagues)
     .values({
-      sportId:   sport.id,
+      sportId:   rugbyUnion.id,
       name:      'Super Rugby Pacific',
       shortName: 'SRP',
       slug:      'super-rugby-pacific',
       country:   'International',
+      logoUrl:   '/logos/Super_Rugby_Pacific_logo.png',
       isActive:  true,
     })
-    .onConflictDoUpdate({ target: leagues.slug, set: { name: 'Super Rugby Pacific' } })
+    .onConflictDoUpdate({
+      target: leagues.slug,
+      set: { name: 'Super Rugby Pacific', logoUrl: '/logos/Super_Rugby_Pacific_logo.png' },
+    })
     .returning();
-  console.log(`✓ League: ${league.name} (id ${league.id})`);
+  console.log(`✓ League: ${superRugby.name} (id ${superRugby.id})`);
 
-  // ── Season ─────────────────────────────────────────────────────────────────
-  const [season] = await db
+  const [srpSeason] = await db
     .insert(seasons)
-    .values({ leagueId: league.id, year: '2026', isCurrent: true })
+    .values({ leagueId: superRugby.id, year: '2026', isCurrent: true })
     .onConflictDoUpdate({
       target: [seasons.leagueId, seasons.year],
       set: { isCurrent: true },
     })
     .returning();
-  console.log(`✓ Season: ${season.year} (id ${season.id})`);
+  console.log(`✓ Season: SRP ${srpSeason.year} (id ${srpSeason.id})`);
 
-  // ── Teams ──────────────────────────────────────────────────────────────────
-  const teamData = [
-    { sportId: sport.id, name: 'Blues',           shortName: 'BLU', slug: 'blues',          country: 'New Zealand', logoUrl: '/rugby/blues.png'        },
-    { sportId: sport.id, name: 'Chiefs',           shortName: 'CHI', slug: 'chiefs',         country: 'New Zealand', logoUrl: '/rugby/chiefs.svg'        },
-    { sportId: sport.id, name: 'Crusaders',        shortName: 'CRU', slug: 'crusaders',      country: 'New Zealand', logoUrl: '/rugby/crusaders.png'     },
-    { sportId: sport.id, name: 'Highlanders',      shortName: 'HIG', slug: 'highlanders',    country: 'New Zealand', logoUrl: '/rugby/highlanders.png'   },
-    { sportId: sport.id, name: 'Hurricanes',       shortName: 'HUR', slug: 'hurricanes',     country: 'New Zealand', logoUrl: '/rugby/hurricanes.png'    },
-    { sportId: sport.id, name: 'ACT Brumbies',     shortName: 'BRU', slug: 'brumbies',       country: 'Australia',   logoUrl: '/rugby/brumbies.svg'      },
-    { sportId: sport.id, name: 'Queensland Reds',  shortName: 'RED', slug: 'reds',           country: 'Australia',   logoUrl: '/rugby/reds.png'          },
-    { sportId: sport.id, name: 'NSW Waratahs',     shortName: 'WAR', slug: 'waratahs',       country: 'Australia',   logoUrl: '/rugby/waratahs.svg'      },
-    { sportId: sport.id, name: 'Western Force',    shortName: 'FOR', slug: 'force',          country: 'Australia',   logoUrl: '/rugby/westernforce.png'  },
-    { sportId: sport.id, name: 'Fijian Drua',      shortName: 'DRU', slug: 'fijian-drua',    country: 'Fiji',        logoUrl: '/rugby/drua.png'          },
-    { sportId: sport.id, name: 'Moana Pasifika',   shortName: 'MOA', slug: 'moana-pasifika', country: 'Pacific',     logoUrl: '/rugby/moana.png'         },
+  const srpTeams = [
+    { sportId: rugbyUnion.id, name: 'Blues',           shortName: 'BLU', slug: 'blues',          country: 'New Zealand', logoUrl: '/rugby/blues.png'        },
+    { sportId: rugbyUnion.id, name: 'Chiefs',           shortName: 'CHI', slug: 'chiefs',         country: 'New Zealand', logoUrl: '/rugby/chiefs.svg'        },
+    { sportId: rugbyUnion.id, name: 'Crusaders',        shortName: 'CRU', slug: 'crusaders',      country: 'New Zealand', logoUrl: '/rugby/crusaders.png'     },
+    { sportId: rugbyUnion.id, name: 'Highlanders',      shortName: 'HIG', slug: 'highlanders',    country: 'New Zealand', logoUrl: '/rugby/highlanders.png'   },
+    { sportId: rugbyUnion.id, name: 'Hurricanes',       shortName: 'HUR', slug: 'hurricanes',     country: 'New Zealand', logoUrl: '/rugby/hurricanes.png'    },
+    { sportId: rugbyUnion.id, name: 'ACT Brumbies',     shortName: 'BRU', slug: 'brumbies',       country: 'Australia',   logoUrl: '/rugby/brumbies.svg'      },
+    { sportId: rugbyUnion.id, name: 'Queensland Reds',  shortName: 'RED', slug: 'reds',           country: 'Australia',   logoUrl: '/rugby/reds.png'          },
+    { sportId: rugbyUnion.id, name: 'NSW Waratahs',     shortName: 'WAR', slug: 'waratahs',       country: 'Australia',   logoUrl: '/rugby/waratahs.svg'      },
+    { sportId: rugbyUnion.id, name: 'Western Force',    shortName: 'FOR', slug: 'force',          country: 'Australia',   logoUrl: '/rugby/westernforce.png'  },
+    { sportId: rugbyUnion.id, name: 'Fijian Drua',      shortName: 'DRU', slug: 'fijian-drua',    country: 'Fiji',        logoUrl: '/rugby/drua.png'          },
+    { sportId: rugbyUnion.id, name: 'Moana Pasifika',   shortName: 'MOA', slug: 'moana-pasifika', country: 'Pacific',     logoUrl: '/rugby/moana.png'         },
   ];
 
-  await db
-    .insert(teams)
-    .values(teamData)
+  await db.insert(teams).values(srpTeams)
     .onConflictDoUpdate({ target: teams.slug, set: { name: teams.name } });
+  console.log(`✓ Teams: ${srpTeams.length} SRP teams upserted`);
 
-  const allTeams = await db
-    .select()
-    .from(teams)
-    .where(eq(teams.sportId, sport.id));
+  const [{ srpCount }] = await db
+    .select({ srpCount: count() })
+    .from(fixtures)
+    .where(eq(fixtures.seasonId, srpSeason.id));
 
-  const bySlug = Object.fromEntries(allTeams.map(t => [t.slug, t.id]));
-  console.log(`✓ Teams: ${allTeams.length} upserted`);
-
-  // ── Fixtures ───────────────────────────────────────────────────────────────
-  const [{ total }] = await db.select({ total: count() }).from(fixtures);
-  if (total > 0) {
-    console.log(`\n⚠ Fixtures already exist (${total} rows). Skipping fixture seed.`);
-    console.log('  To re-seed, delete all rows from the fixtures table first.');
+  if (srpCount > 0) {
+    console.log(`  ↳ Fixtures exist (${srpCount} rows) — skipping SRP fixture seed`);
   } else {
+    const allSrpTeams = await db.select().from(teams).where(eq(teams.sportId, rugbyUnion.id));
+    const bySlug = Object.fromEntries(allSrpTeams.map(t => [t.slug, t.id]));
+
     const fixtureData = [
       // Round 14 · Fri 22 – Sat 23 May 2026 (finished)
-      { seasonId: season.id, homeTeamId: bySlug['blues'],      awayTeamId: bySlug['crusaders'],    scheduledAt: new Date('2026-05-22T08:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 28, awayScore: 21 },
-      { seasonId: season.id, homeTeamId: bySlug['hurricanes'], awayTeamId: bySlug['chiefs'],       scheduledAt: new Date('2026-05-22T10:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 15, awayScore: 24 },
-      { seasonId: season.id, homeTeamId: bySlug['brumbies'],   awayTeamId: bySlug['reds'],         scheduledAt: new Date('2026-05-23T07:45:00Z'), status: 'finished', round: 'Round 14', homeScore: 31, awayScore: 15 },
-      { seasonId: season.id, homeTeamId: bySlug['waratahs'],   awayTeamId: bySlug['fijian-drua'],  scheduledAt: new Date('2026-05-23T09:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 22, awayScore: 19 },
-      { seasonId: season.id, homeTeamId: bySlug['force'],      awayTeamId: bySlug['highlanders'],  scheduledAt: new Date('2026-05-23T11:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 14, awayScore: 27 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['blues'],         awayTeamId: bySlug['crusaders'],     scheduledAt: new Date('2026-05-22T08:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 28, awayScore: 21 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['hurricanes'],    awayTeamId: bySlug['chiefs'],        scheduledAt: new Date('2026-05-22T10:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 15, awayScore: 24 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['brumbies'],      awayTeamId: bySlug['reds'],          scheduledAt: new Date('2026-05-23T07:45:00Z'), status: 'finished', round: 'Round 14', homeScore: 31, awayScore: 15 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['waratahs'],      awayTeamId: bySlug['fijian-drua'],   scheduledAt: new Date('2026-05-23T09:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 22, awayScore: 19 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['force'],         awayTeamId: bySlug['highlanders'],   scheduledAt: new Date('2026-05-23T11:05:00Z'), status: 'finished', round: 'Round 14', homeScore: 14, awayScore: 27 },
       // Round 15 · Fri 29 – Sat 30 May 2026 (finished)
-      { seasonId: season.id, homeTeamId: bySlug['crusaders'],  awayTeamId: bySlug['chiefs'],       scheduledAt: new Date('2026-05-29T08:05:00Z'), status: 'finished', round: 'Round 15', homeScore: 17, awayScore: 25 },
-      { seasonId: season.id, homeTeamId: bySlug['blues'],      awayTeamId: bySlug['hurricanes'],   scheduledAt: new Date('2026-05-29T10:05:00Z'), status: 'finished', round: 'Round 15', homeScore: 34, awayScore: 17 },
-      { seasonId: season.id, homeTeamId: bySlug['highlanders'],awayTeamId: bySlug['reds'],         scheduledAt: new Date('2026-05-30T07:45:00Z'), status: 'finished', round: 'Round 15', homeScore: 22, awayScore: 15 },
-      { seasonId: season.id, homeTeamId: bySlug['moana-pasifika'], awayTeamId: bySlug['waratahs'], scheduledAt: new Date('2026-05-30T07:45:00Z'), status: 'finished', round: 'Round 15', homeScore: 28, awayScore: 21 },
-      { seasonId: season.id, homeTeamId: bySlug['fijian-drua'],awayTeamId: bySlug['brumbies'],     scheduledAt: new Date('2026-05-30T09:05:00Z'), status: 'finished', round: 'Round 15', homeScore: 13, awayScore: 29 },
-      // Round 16 · Fri 5 – Sat 6 Jun 2026 (scheduled)
-      { seasonId: season.id, homeTeamId: bySlug['chiefs'],     awayTeamId: bySlug['blues'],        scheduledAt: new Date('2026-06-05T08:05:00Z'), status: 'scheduled', round: 'Round 16' },
-      { seasonId: season.id, homeTeamId: bySlug['crusaders'],  awayTeamId: bySlug['hurricanes'],   scheduledAt: new Date('2026-06-05T10:05:00Z'), status: 'scheduled', round: 'Round 16' },
-      { seasonId: season.id, homeTeamId: bySlug['brumbies'],   awayTeamId: bySlug['highlanders'],  scheduledAt: new Date('2026-06-06T07:45:00Z'), status: 'scheduled', round: 'Round 16' },
-      { seasonId: season.id, homeTeamId: bySlug['reds'],       awayTeamId: bySlug['force'],        scheduledAt: new Date('2026-06-06T09:05:00Z'), status: 'scheduled', round: 'Round 16' },
-      { seasonId: season.id, homeTeamId: bySlug['waratahs'],   awayTeamId: bySlug['moana-pasifika'],scheduledAt: new Date('2026-06-06T09:05:00Z'), status: 'scheduled', round: 'Round 16' },
-      // Round 17 · Sat 13 Jun 2026 (scheduled)
-      { seasonId: season.id, homeTeamId: bySlug['blues'],      awayTeamId: bySlug['brumbies'],     scheduledAt: new Date('2026-06-13T07:35:00Z'), status: 'scheduled', round: 'Round 17' },
-      { seasonId: season.id, homeTeamId: bySlug['hurricanes'], awayTeamId: bySlug['highlanders'],  scheduledAt: new Date('2026-06-13T08:05:00Z'), status: 'scheduled', round: 'Round 17' },
-      { seasonId: season.id, homeTeamId: bySlug['chiefs'],     awayTeamId: bySlug['fijian-drua'],  scheduledAt: new Date('2026-06-13T10:05:00Z'), status: 'scheduled', round: 'Round 17' },
-      { seasonId: season.id, homeTeamId: bySlug['reds'],       awayTeamId: bySlug['waratahs'],     scheduledAt: new Date('2026-06-13T09:05:00Z'), status: 'scheduled', round: 'Round 17' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['crusaders'],     awayTeamId: bySlug['chiefs'],        scheduledAt: new Date('2026-05-29T08:05:00Z'), status: 'finished', round: 'Round 15', homeScore: 17, awayScore: 25 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['blues'],         awayTeamId: bySlug['hurricanes'],    scheduledAt: new Date('2026-05-29T10:05:00Z'), status: 'finished', round: 'Round 15', homeScore: 34, awayScore: 17 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['highlanders'],   awayTeamId: bySlug['reds'],          scheduledAt: new Date('2026-05-30T07:45:00Z'), status: 'finished', round: 'Round 15', homeScore: 22, awayScore: 15 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['moana-pasifika'],awayTeamId: bySlug['waratahs'],      scheduledAt: new Date('2026-05-30T07:45:00Z'), status: 'finished', round: 'Round 15', homeScore: 28, awayScore: 21 },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['fijian-drua'],   awayTeamId: bySlug['brumbies'],      scheduledAt: new Date('2026-05-30T09:05:00Z'), status: 'finished', round: 'Round 15', homeScore: 13, awayScore: 29 },
+      // Round 16 · Fri 5 – Sat 6 Jun 2026
+      { seasonId: srpSeason.id, homeTeamId: bySlug['chiefs'],        awayTeamId: bySlug['blues'],         scheduledAt: new Date('2026-06-05T08:05:00Z'), status: 'scheduled', round: 'Round 16' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['crusaders'],     awayTeamId: bySlug['hurricanes'],    scheduledAt: new Date('2026-06-05T10:05:00Z'), status: 'scheduled', round: 'Round 16' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['brumbies'],      awayTeamId: bySlug['highlanders'],   scheduledAt: new Date('2026-06-06T07:45:00Z'), status: 'scheduled', round: 'Round 16' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['reds'],          awayTeamId: bySlug['force'],         scheduledAt: new Date('2026-06-06T09:05:00Z'), status: 'scheduled', round: 'Round 16' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['waratahs'],      awayTeamId: bySlug['moana-pasifika'],scheduledAt: new Date('2026-06-06T09:05:00Z'), status: 'scheduled', round: 'Round 16' },
+      // Round 17 · Sat 13 Jun 2026
+      { seasonId: srpSeason.id, homeTeamId: bySlug['blues'],         awayTeamId: bySlug['brumbies'],      scheduledAt: new Date('2026-06-13T07:35:00Z'), status: 'scheduled', round: 'Round 17' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['hurricanes'],    awayTeamId: bySlug['highlanders'],   scheduledAt: new Date('2026-06-13T08:05:00Z'), status: 'scheduled', round: 'Round 17' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['chiefs'],        awayTeamId: bySlug['fijian-drua'],   scheduledAt: new Date('2026-06-13T10:05:00Z'), status: 'scheduled', round: 'Round 17' },
+      { seasonId: srpSeason.id, homeTeamId: bySlug['reds'],          awayTeamId: bySlug['waratahs'],      scheduledAt: new Date('2026-06-13T09:05:00Z'), status: 'scheduled', round: 'Round 17' },
     ];
 
     await db.insert(fixtures).values(fixtureData);
-    console.log(`✓ Fixtures: ${fixtureData.length} inserted`);
+    console.log(`✓ Fixtures: ${fixtureData.length} SRP fixtures inserted`);
   }
+
+  // ══════════════════════════════════════════════════════════════════════════════
+  // Rugby League — NRL 2026
+  // ══════════════════════════════════════════════════════════════════════════════
+
+  const [rugbyLeague] = await db
+    .insert(sports)
+    .values({ name: 'Rugby League', slug: 'rugby-league' })
+    .onConflictDoUpdate({ target: sports.slug, set: { name: 'Rugby League' } })
+    .returning();
+  console.log(`\n✓ Sport: ${rugbyLeague.name} (id ${rugbyLeague.id})`);
+
+  const [nrl] = await db
+    .insert(leagues)
+    .values({
+      sportId:   rugbyLeague.id,
+      name:      'National Rugby League',
+      shortName: 'NRL',
+      slug:      'nrl',
+      country:   'Australia',
+      logoUrl:   '/logos/National_Rugby_League.svg',
+      isActive:  true,
+    })
+    .onConflictDoUpdate({
+      target: leagues.slug,
+      set: { name: 'National Rugby League', logoUrl: '/logos/National_Rugby_League.svg' },
+    })
+    .returning();
+  console.log(`✓ League: ${nrl.name} (id ${nrl.id})`);
+
+  const [nrlSeason] = await db
+    .insert(seasons)
+    .values({ leagueId: nrl.id, year: '2026', isCurrent: true })
+    .onConflictDoUpdate({
+      target: [seasons.leagueId, seasons.year],
+      set: { isCurrent: true },
+    })
+    .returning();
+  console.log(`✓ Season: NRL ${nrlSeason.year} (id ${nrlSeason.id})`);
+
+  const nrlTeams = [
+    { sportId: rugbyLeague.id, name: 'Brisbane Broncos',           shortName: 'BRI', slug: 'broncos',   country: 'Australia',   logoUrl: '/rugbyleague/brisbanebroncos.svg'          },
+    { sportId: rugbyLeague.id, name: 'Canberra Raiders',           shortName: 'CAN', slug: 'raiders',   country: 'Australia',   logoUrl: '/rugbyleague/canberraraiders.svg'          },
+    { sportId: rugbyLeague.id, name: 'Canterbury Bulldogs',        shortName: 'CBY', slug: 'bulldogs',  country: 'Australia',   logoUrl: '/rugbyleague/canterburybulldogs.svg'       },
+    { sportId: rugbyLeague.id, name: 'Cronulla Sharks',            shortName: 'CRO', slug: 'sharks',    country: 'Australia',   logoUrl: '/rugbyleague/cronullasharks.svg'           },
+    { sportId: rugbyLeague.id, name: 'Dolphins',                   shortName: 'DOL', slug: 'dolphins',  country: 'Australia',   logoUrl: '/rugbyleague/dolphins.svg'                 },
+    { sportId: rugbyLeague.id, name: 'Gold Coast Titans',          shortName: 'GCT', slug: 'titans',    country: 'Australia',   logoUrl: '/rugbyleague/goldcoasttitans.svg'          },
+    { sportId: rugbyLeague.id, name: 'Manly Sea Eagles',           shortName: 'MAN', slug: 'sea-eagles',country: 'Australia',   logoUrl: '/rugbyleague/manlyseaeagles.svg'           },
+    { sportId: rugbyLeague.id, name: 'Melbourne Storm',            shortName: 'MEL', slug: 'storm',     country: 'Australia',   logoUrl: '/rugbyleague/melbournestorm.svg'           },
+    { sportId: rugbyLeague.id, name: 'Newcastle Knights',          shortName: 'NEW', slug: 'knights',   country: 'Australia',   logoUrl: '/rugbyleague/newcastleknights.svg'         },
+    { sportId: rugbyLeague.id, name: 'North Queensland Cowboys',   shortName: 'NQC', slug: 'cowboys',   country: 'Australia',   logoUrl: '/rugbyleague/northqueenslandcowboys.svg'   },
+    { sportId: rugbyLeague.id, name: 'Parramatta Eels',            shortName: 'PAR', slug: 'eels',      country: 'Australia',   logoUrl: '/rugbyleague/parramattaeels.svg'           },
+    { sportId: rugbyLeague.id, name: 'Penrith Panthers',           shortName: 'PEN', slug: 'panthers',  country: 'Australia',   logoUrl: '/rugbyleague/penrithpanthers.svg'          },
+    { sportId: rugbyLeague.id, name: 'South Sydney Rabbitohs',     shortName: 'SSY', slug: 'rabbitohs', country: 'Australia',   logoUrl: '/rugbyleague/southsydneyrabbitohs.svg'    },
+    { sportId: rugbyLeague.id, name: 'St George Illawarra Dragons',shortName: 'SGI', slug: 'dragons',   country: 'Australia',   logoUrl: '/rugbyleague/stgeorgeillawarradragons.svg' },
+    { sportId: rugbyLeague.id, name: 'Sydney Roosters',            shortName: 'SYD', slug: 'roosters',  country: 'Australia',   logoUrl: '/rugbyleague/sydneyroosters.svg'           },
+    { sportId: rugbyLeague.id, name: 'New Zealand Warriors',       shortName: 'NZW', slug: 'warriors',  country: 'New Zealand', logoUrl: '/rugbyleague/warriors.svg'                 },
+    { sportId: rugbyLeague.id, name: 'Wests Tigers',               shortName: 'WST', slug: 'tigers',    country: 'Australia',   logoUrl: '/rugbyleague/weststigers.svg'              },
+  ];
+
+  await db.insert(teams).values(nrlTeams)
+    .onConflictDoUpdate({ target: teams.slug, set: { name: teams.name } });
+  console.log(`✓ Teams: ${nrlTeams.length} NRL teams upserted`);
+  console.log('  ↳ NRL fixtures will be populated by the sync cron (npm run sync)');
 
   console.log('\n✅ Seed complete.');
   process.exit(0);
