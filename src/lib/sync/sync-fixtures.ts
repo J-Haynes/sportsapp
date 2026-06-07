@@ -9,6 +9,7 @@ const PROVIDER = 'thesportsdb';
 const LEAGUES_TO_SYNC = [
   { apiId: '4551', season: '2026', slug: 'super-rugby-pacific', maxGameDurationHours: 3 },
   { apiId: '4416', season: '2026', slug: 'nrl',                 maxGameDurationHours: 3 },
+  { apiId: '4429', season: '2026', slug: 'fifa-world-cup',      maxGameDurationHours: 3 },
 ] as const;
 
 // ── Status mapping ────────────────────────────────────────────────────────────
@@ -161,7 +162,7 @@ async function syncLeague(
       ? parseInt(event.intHomeScore, 10) : null;
     const awayScore = event.intAwayScore != null && event.intAwayScore !== ''
       ? parseInt(event.intAwayScore, 10) : null;
-    const round     = event.intRound ? `Round ${event.intRound}` : null;
+    const round     = event.strRound || (event.intRound ? `Round ${event.intRound}` : null);
 
     let existingId = fixtureExtMap.get(event.idEvent);
 

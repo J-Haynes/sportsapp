@@ -8,6 +8,7 @@ export interface TsdbEvent {
   strAwayTeam:     string;
   strTimestamp:    string;   // UTC ISO-8601, e.g. "2026-04-11T07:05:00"
   intRound:        string;
+  strRound:        string | null;  // descriptive round name e.g. "Quarter-Final"; often empty
   strVenue:        string | null;
   strStatus:       string;   // "NS" | "FT" | ""
   strPostponed:    string;   // "yes" | "no"

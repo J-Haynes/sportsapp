@@ -173,6 +173,110 @@ async function main() {
   console.log(`✓ Teams: ${nrlTeams.length} NRL teams upserted`);
   console.log('  ↳ NRL fixtures will be populated by the sync cron (npm run sync)');
 
+  // ══════════════════════════════════════════════════════════════════════════════
+  // Football — FIFA World Cup 2026
+  // ══════════════════════════════════════════════════════════════════════════════
+
+  const [football] = await db
+    .insert(sports)
+    .values({ name: 'Football', slug: 'football' })
+    .onConflictDoUpdate({ target: sports.slug, set: { name: 'Football' } })
+    .returning();
+  console.log(`\n✓ Sport: ${football.name} (id ${football.id})`);
+
+  const [worldCup] = await db
+    .insert(leagues)
+    .values({
+      sportId:   football.id,
+      name:      'FIFA World Cup',
+      shortName: 'WC',
+      slug:      'fifa-world-cup',
+      country:   'International',
+      logoUrl:   '/logos/fifa-world-cup.png',
+      isActive:  true,
+    })
+    .onConflictDoUpdate({
+      target: leagues.slug,
+      set: { name: 'FIFA World Cup', logoUrl: '/logos/fifa-world-cup.png' },
+    })
+    .returning();
+  console.log(`✓ League: ${worldCup.name} (id ${worldCup.id})`);
+
+  await db
+    .insert(seasons)
+    .values({ leagueId: worldCup.id, year: '2026', isCurrent: true })
+    .onConflictDoUpdate({
+      target: [seasons.leagueId, seasons.year],
+      set: { isCurrent: true },
+    });
+  console.log(`✓ Season: World Cup 2026`);
+
+  // Country name → ISO 3166-1 alpha-2 code, matching TheSportsDB team names exactly.
+  const COUNTRY_FLAG: Record<string, string> = {
+    'Algeria':            'dz',
+    'Argentina':          'ar',
+    'Australia':          'au',
+    'Austria':            'at',
+    'Belgium':            'be',
+    'Bosnia-Herzegovina': 'ba',
+    'Brazil':             'br',
+    'Canada':             'ca',
+    'Cape Verde':         'cv',
+    'Colombia':           'co',
+    'Croatia':            'hr',
+    'Curaçao':            'cw',
+    'Czech Republic':     'cz',
+    'DR Congo':           'cd',
+    'Ecuador':            'ec',
+    'Egypt':              'eg',
+    'England':            'gb-eng',
+    'France':             'fr',
+    'Germany':            'de',
+    'Ghana':              'gh',
+    'Haiti':              'ht',
+    'Iran':               'ir',
+    'Iraq':               'iq',
+    'Ivory Coast':        'ci',
+    'Japan':              'jp',
+    'Jordan':             'jo',
+    'Mexico':             'mx',
+    'Morocco':            'ma',
+    'Netherlands':        'nl',
+    'New Zealand':        'nz',
+    'Norway':             'no',
+    'Panama':             'pa',
+    'Paraguay':           'py',
+    'Portugal':           'pt',
+    'Qatar':              'qa',
+    'Saudi Arabia':       'sa',
+    'Scotland':           'gb-sct',
+    'Senegal':            'sn',
+    'South Africa':       'za',
+    'South Korea':        'kr',
+    'Spain':              'es',
+    'Sweden':             'se',
+    'Switzerland':        'ch',
+    'Tunisia':            'tn',
+    'Turkey':             'tr',
+    'USA':                'us',
+    'Uruguay':            'uy',
+    'Uzbekistan':         'uz',
+  };
+
+  const wcTeams = Object.entries(COUNTRY_FLAG).map(([name, code]) => ({
+    sportId:   football.id,
+    name,
+    shortName: name.slice(0, 3).toUpperCase(),
+    slug:      `wc-${code}`,
+    country:   name,
+    logoUrl:   `/country/${code}.svg`,
+  }));
+
+  await db.insert(teams).values(wcTeams)
+    .onConflictDoUpdate({ target: teams.slug, set: { logoUrl: teams.logoUrl } });
+  console.log(`✓ Teams: ${wcTeams.length} World Cup nations upserted`);
+  console.log('  ↳ World Cup fixtures will be populated by the sync cron (npm run sync)');
+
   console.log('\n✅ Seed complete.');
   process.exit(0);
 }
