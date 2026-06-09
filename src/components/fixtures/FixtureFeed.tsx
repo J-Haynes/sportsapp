@@ -35,7 +35,7 @@ export function FixtureFeed({ fixtures }: Props) {
   return (
     <>
       {/* Scrollable feed — padding-bottom clears the fixed bottom nav */}
-      <div className="pb-24 max-w-lg mx-auto w-full px-4 py-5 space-y-7">
+      <div className="pb-24 max-w-lg mx-auto w-full px-4 py-5">
         {grouped.length === 0 ? (
           <div className="text-center py-20 text-zinc-600">
             <p className="text-4xl mb-3">📭</p>
@@ -44,8 +44,15 @@ export function FixtureFeed({ fixtures }: Props) {
             </p>
           </div>
         ) : (
-          grouped.map(([dateKey, dayFixtures]) => (
-            <DateGroup key={dateKey} dateKey={dateKey} fixtures={dayFixtures} />
+          grouped.map(([dateKey, dayFixtures], i) => (
+            <div key={dateKey}>
+              {i > 0 && (
+                <div className="flex justify-center my-7">
+                  <div className="h-px bg-zinc-800 w-4/5" />
+                </div>
+              )}
+              <DateGroup dateKey={dateKey} fixtures={dayFixtures} />
+            </div>
           ))
         )}
       </div>

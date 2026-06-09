@@ -8,10 +8,16 @@ interface Props {
 }
 
 export function DateGroup({ dateKey, fixtures }: Props) {
+  const label = formatDateHeading(dateKey);
+  const isToday = label === 'Today';
+
   return (
     <section>
-      <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3" suppressHydrationWarning>
-        {formatDateHeading(dateKey)}
+      <h2
+        className={`text-xs font-semibold uppercase tracking-wider mb-3 ${isToday ? 'text-white' : 'text-zinc-500'}`}
+        suppressHydrationWarning
+      >
+        {label}
       </h2>
       <div className="space-y-3">
         {fixtures.map(fixture => (

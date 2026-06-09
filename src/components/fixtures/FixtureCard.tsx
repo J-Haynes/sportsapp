@@ -70,12 +70,16 @@ interface TeamMatchProps {
 }
 
 function TeamMatchLayout({ homeTeam, awayTeam, scheduledAt, status, homeScore, awayScore }: TeamMatchProps) {
+  const isFinished = status === 'finished' && homeScore != null && awayScore != null;
+  const homeIsLoser = isFinished && homeScore! < awayScore!;
+  const awayIsLoser = isFinished && awayScore! < homeScore!;
+
   return (
     <div className="flex items-center gap-2">
       {/* Home team */}
       <div className="flex-1 flex flex-col items-center gap-1.5">
-        <TeamAvatar team={homeTeam} />
-        <span className="text-xs font-semibold text-zinc-200 text-center leading-tight">
+        <TeamAvatar team={homeTeam} size="lg" />
+        <span className={`text-xs font-semibold text-center leading-tight ${homeIsLoser ? 'text-zinc-500' : 'text-zinc-200'}`}>
           {homeTeam.name}
         </span>
       </div>
@@ -92,8 +96,8 @@ function TeamMatchLayout({ homeTeam, awayTeam, scheduledAt, status, homeScore, a
 
       {/* Away team */}
       <div className="flex-1 flex flex-col items-center gap-1.5">
-        <TeamAvatar team={awayTeam} />
-        <span className="text-xs font-semibold text-zinc-200 text-center leading-tight">
+        <TeamAvatar team={awayTeam} size="lg" />
+        <span className={`text-xs font-semibold text-center leading-tight ${awayIsLoser ? 'text-zinc-500' : 'text-zinc-200'}`}>
           {awayTeam.name}
         </span>
       </div>
