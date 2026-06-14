@@ -218,6 +218,7 @@ async function syncLeague(config: LeagueConfig): Promise<number> {
         .update(fixtures)
         .set({
           status, homeScore, awayScore,
+          scheduledAt: new Date(event.strTimestamp + 'Z'),
           ...(homeTeamId != null && { homeTeamId }),
           ...(awayTeamId != null && { awayTeamId }),
           ...(metaUpdate != null && { round, sportMeta: metaUpdate }),
